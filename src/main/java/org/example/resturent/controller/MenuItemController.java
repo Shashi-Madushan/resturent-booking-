@@ -2,15 +2,18 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.MenuItemDto;
+import org.example.resturent.dto.menuitem.MenuItemDto;
 import org.example.resturent.service.MenuItemService;
+import org.example.resturent.service.ImageStorageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,6 +23,7 @@ import java.util.List;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
+    private final ImageStorageService imageStorageService;
 
     @GetMapping
     public ResponseEntity<Page<MenuItemDto>> getMenuItemsByRestaurantId(
@@ -50,25 +54,49 @@ public class MenuItemController {
         return ResponseEntity.ok(menuItemService.getMenuItemById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MenuItemDto> createMenuItem(
             @PathVariable Long restaurantId,
-            @Valid @RequestBody MenuItemDto menuItemDto) {
+            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         
         menuItemDto.setRestaurantId(restaurantId);
+        
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                String imageUrl = imageStorageService.upload(image.getBytes(), fileName);
+                menuItemDto.setImageUrl(imageUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
+        }
+        
         return new ResponseEntity<>(
             menuItemService.createMenuItem(menuItemDto),
             HttpStatus.CREATED
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MenuItemDto> updateMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long id,
-            @Valid @RequestBody MenuItemDto menuItemDto) {
+            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         
         menuItemDto.setRestaurantId(restaurantId);
+        
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                String imageUrl = imageStorageService.upload(image.getBytes(), fileName);
+                menuItemDto.setImageUrl(imageUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
+        }
+        
         return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto));
     }
 
