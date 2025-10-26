@@ -1,7 +1,6 @@
-package org.example.resturent.dto.openinghour;
+package org.example.resturent.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,16 +8,12 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class
-
-OpeningHourDTO {
+public class OpenHourDto {
     private Long id;
-    private Long restaurantId;
     private DayOfWeek dayOfWeek;
-    private LocalTime openTime;
-    private LocalTime closeTime;
-    private boolean isClosed;
+    private LocalTime openingTime;
+    private LocalTime closingTime;
+    private Long restaurantId;
 }
