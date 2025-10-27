@@ -1,14 +1,13 @@
 package org.example.resturent.service.impl;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
 import org.example.resturent.exeptions.custom.StorageException;
 import org.example.resturent.service.ImageStorageService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Service
+@ConditionalOnProperty(name = "storage.type", havingValue = "CLOUDINARY")
 public class CloudinaryImageStorageService implements ImageStorageService {
 
     private final Cloudinary cloudinary;

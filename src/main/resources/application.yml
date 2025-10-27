@@ -4,8 +4,8 @@ storage:
 minio:
   endpoint: http://localhost:9000
   accessKey: minioadmin
-  secretKey: minioadmin
-  bucket: images
+  secretKey: minioadmin123
+  bucket: resturentimages
   useSsl: false
 
 cloudinary:

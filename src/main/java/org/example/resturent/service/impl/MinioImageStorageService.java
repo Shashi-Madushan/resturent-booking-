@@ -9,11 +9,13 @@ import org.example.resturent.exeptions.custom.StorageException;
 import org.example.resturent.service.ImageStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 @Service
+@ConditionalOnProperty(name = "storage.type", havingValue = "MINIO")
 public class MinioImageStorageService implements ImageStorageService {
 
     private final MinioClient minioClient;
