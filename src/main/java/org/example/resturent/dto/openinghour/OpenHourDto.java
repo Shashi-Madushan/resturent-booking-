@@ -15,5 +15,6 @@ public class OpenHourDto {
     private DayOfWeek dayOfWeek;
     private LocalTime openingTime;
     private LocalTime closingTime;
+    private boolean isClosed;
     private Long restaurantId;
 }

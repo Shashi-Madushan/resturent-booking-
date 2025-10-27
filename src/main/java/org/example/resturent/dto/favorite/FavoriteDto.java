@@ -5,17 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FavoriteDTO {
+public class FavoriteDto {
     private Long id;
     private Long userId;
     private Long restaurantId;
-    private LocalDateTime addedAt;
-    private String restaurantName;
-    private String restaurantImageUrl;
+    private OffsetDateTime createdAt;
+
 }

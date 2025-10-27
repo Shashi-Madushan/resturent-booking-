@@ -29,5 +29,6 @@ public class User {
 
     @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active = true;
+
     private String role; // e.g., USER / ADMIN
 }

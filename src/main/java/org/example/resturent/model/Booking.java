@@ -1,5 +1,4 @@
 package org.example.resturent.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.resturent.enums.BookingStatus;

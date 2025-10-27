@@ -2,7 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.RestaurantDto;
+import org.example.resturent.dto.resturent.RestaurantDto;
 import org.example.resturent.service.RestaurantService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
