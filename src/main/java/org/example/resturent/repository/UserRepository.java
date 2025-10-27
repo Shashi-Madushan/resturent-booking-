@@ -21,6 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.active = false WHERE u.id = :id")
     void deactivateUser(@Param("id") Long id);
 
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.id = :id AND u.active = true")
-    boolean existsByIdAndActiveTrue(@Param("id") Long id);
+    boolean existsByIdAndActiveTrue(Long id);
 }
+
