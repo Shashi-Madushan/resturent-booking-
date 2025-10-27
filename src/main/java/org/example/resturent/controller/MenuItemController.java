@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.resturent.dto.menuitem.MenuItemDto;
 import org.example.resturent.service.MenuItemService;
-import org.example.resturent.service.ImageStorageService;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.List;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
-    private final ImageStorageService imageStorageService;
 
     @GetMapping
     public ResponseEntity<Page<MenuItemDto>> getMenuItemsByRestaurantId(
@@ -51,18 +49,8 @@ public class MenuItemController {
 
         menuItemDto.setRestaurantId(restaurantId);
 
-        if (image != null && !image.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                // Use the MultipartFile upload method from ImageStorageService
-                String imageUrl = imageStorageService.upload(image, fileName);
-                menuItemDto.setImageUrl(imageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image", e);
-            }
-        }
-
-        return new ResponseEntity<>(menuItemService.createMenuItem(menuItemDto), HttpStatus.CREATED);
+        // delegate image handling to service
+        return new ResponseEntity<>(menuItemService.createMenuItem(menuItemDto, image), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -74,18 +62,8 @@ public class MenuItemController {
 
         menuItemDto.setRestaurantId(restaurantId);
 
-        if (image != null && !image.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                // Use the MultipartFile upload method from ImageStorageService
-                String imageUrl = imageStorageService.upload(image, fileName);
-                menuItemDto.setImageUrl(imageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image", e);
-            }
-        }
-
-        return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto));
+        // delegate image handling to service
+        return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto, image));
     }
 
     @DeleteMapping("/{id}")
