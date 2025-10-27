@@ -1,6 +1,6 @@
 package org.example.resturent.service;
 
-import org.example.resturent.dto.OpenHourDto;
+import org.example.resturent.dto.openinghour.OpenHourDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -2,7 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.RestaurantDto;
+import org.example.resturent.dto.resturent.RestaurantDto;
 import org.example.resturent.service.RestaurantService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

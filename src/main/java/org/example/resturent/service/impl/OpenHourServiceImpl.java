@@ -1,8 +1,8 @@
 package org.example.resturent.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.OpenHourDto;
-import org.example.resturent.exception.ResourceNotFoundException;
+import org.example.resturent.dto.openinghour.OpenHourDto;
+import org.example.resturent.exeptions.custom.ResourceNotFoundException;
 import org.example.resturent.model.OpenHour;
 import org.example.resturent.model.Restaurant;
 import org.example.resturent.repository.OpenHourRepository;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.stream.Collectors;
 

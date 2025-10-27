@@ -1,6 +1,6 @@
 package org.example.resturent.service;
 
-import org.example.resturent.dto.RestaurantDto;
+import org.example.resturent.dto.resturent.RestaurantDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
