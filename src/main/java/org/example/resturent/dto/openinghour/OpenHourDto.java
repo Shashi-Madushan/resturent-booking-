@@ -1,4 +1,4 @@
-package org.example.resturent.dto;
+package org.example.resturent.dto.openinghour;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,5 +15,6 @@ public class OpenHourDto {
     private DayOfWeek dayOfWeek;
     private LocalTime openingTime;
     private LocalTime closingTime;
+    private boolean isClosed;
     private Long restaurantId;
 }

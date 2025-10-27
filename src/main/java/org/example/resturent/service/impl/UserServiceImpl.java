@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deactivateUser(Long id) {
-        if (!userRepository.existsByIdAndActiveTrue(id, true)) {
+        if (!userRepository.existsByIdAndActiveTrue(id)) {
             throw new UserNotFoundException("User not found with id: " + id);
         }
         userRepository.deactivateUser(id);

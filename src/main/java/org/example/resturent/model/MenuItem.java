@@ -24,6 +24,8 @@ public class MenuItem {
 
     private boolean isAvailable;
 
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
