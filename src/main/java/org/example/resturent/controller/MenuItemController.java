@@ -2,15 +2,12 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.MenuItemDto;
+import org.example.resturent.dto.menuitem.MenuItemDto;
 import org.example.resturent.service.MenuItemService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,19 +25,13 @@ public class MenuItemController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "itemName,asc") String[] sort) {
-        
+
         String sortField = sort[0];
         String sortDirection = sort.length > 1 ? sort[1] : "asc";
-        
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") 
-            ? Sort.Direction.DESC 
-            : Sort.Direction.ASC;
-            
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-        
-        return ResponseEntity.ok(
-            menuItemService.getMenuItemsByRestaurantId(restaurantId, availableOnly, pageable)
-        );
+
+        return ResponseEntity.ok(menuItemService.getMenuItemsByRestaurantId(restaurantId, availableOnly, pageable));
     }
 
     @GetMapping("/{id}")
@@ -50,33 +41,35 @@ public class MenuItemController {
         return ResponseEntity.ok(menuItemService.getMenuItemById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MenuItemDto> createMenuItem(
             @PathVariable Long restaurantId,
-            @Valid @RequestBody MenuItemDto menuItemDto) {
-        
+            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
         menuItemDto.setRestaurantId(restaurantId);
-        return new ResponseEntity<>(
-            menuItemService.createMenuItem(menuItemDto),
-            HttpStatus.CREATED
-        );
+
+        // delegate image handling to service
+        return new ResponseEntity<>(menuItemService.createMenuItem(menuItemDto, image), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MenuItemDto> updateMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long id,
-            @Valid @RequestBody MenuItemDto menuItemDto) {
-        
+            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
         menuItemDto.setRestaurantId(restaurantId);
-        return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto));
+
+        // delegate image handling to service
+        return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto, image));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long id) {
-        
         menuItemService.deleteMenuItem(id);
         return ResponseEntity.noContent().build();
     }
@@ -85,10 +78,7 @@ public class MenuItemController {
     public ResponseEntity<List<MenuItemDto>> updateRestaurantMenuItems(
             @PathVariable Long restaurantId,
             @Valid @RequestBody List<@Valid MenuItemDto> menuItemDtos) {
-        
         menuItemDtos.forEach(dto -> dto.setRestaurantId(restaurantId));
-        return ResponseEntity.ok(
-            menuItemService.updateRestaurantMenuItems(restaurantId, menuItemDtos)
-        );
+        return ResponseEntity.ok(menuItemService.updateRestaurantMenuItems(restaurantId, menuItemDtos));
     }
 }

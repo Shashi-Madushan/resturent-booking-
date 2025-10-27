@@ -1,18 +1,23 @@
 package org.example.resturent.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.MenuItemDto;
-import org.example.resturent.exeptions.custom.ResourceNotFoundException;
+
+
+import org.example.resturent.dto.menuitem.MenuItemDto;
+import org.example.resturent.exception.ResourceNotFoundException;
+
 import org.example.resturent.model.MenuItem;
 import org.example.resturent.model.Restaurant;
 import org.example.resturent.repository.MenuItemRepository;
 import org.example.resturent.repository.RestaurantRepository;
 import org.example.resturent.service.MenuItemService;
+import org.example.resturent.service.ImageStorageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +29,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final RestaurantRepository restaurantRepository;
     private final ModelMapper modelMapper;
+    private final ImageStorageService imageStorageService; // handle uploads here
 
     @Override
     public Page<MenuItemDto> getMenuItemsByRestaurantId(Long restaurantId, boolean availableOnly, Pageable pageable) {
@@ -45,9 +51,16 @@ public class MenuItemServiceImpl implements MenuItemService {
         return modelMapper.map(menuItem, MenuItemDto.class);
     }
 
+    // delegate no-image call to new method
     @Override
     @Transactional
     public MenuItemDto createMenuItem(MenuItemDto menuItemDto) {
+        return createMenuItem(menuItemDto, null);
+    }
+
+    @Override
+    @Transactional
+    public MenuItemDto createMenuItem(MenuItemDto menuItemDto, MultipartFile image) {
         Restaurant restaurant = restaurantRepository.findById(menuItemDto.getRestaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + menuItemDto.getRestaurantId()));
 
@@ -56,15 +69,33 @@ public class MenuItemServiceImpl implements MenuItemService {
             throw new IllegalArgumentException("Menu item with this name already exists in this restaurant");
         }
 
+        // handle image upload here
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                String imageUrl = imageStorageService.upload(image, fileName);
+                menuItemDto.setImageUrl(imageUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
+        }
+
         MenuItem menuItem = modelMapper.map(menuItemDto, MenuItem.class);
         menuItem.setRestaurant(restaurant);
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         return modelMapper.map(savedMenuItem, MenuItemDto.class);
     }
 
+    // delegate no-image call to new method
     @Override
     @Transactional
     public MenuItemDto updateMenuItem(Long id, MenuItemDto menuItemDto) {
+        return updateMenuItem(id, menuItemDto, null);
+    }
+
+    @Override
+    @Transactional
+    public MenuItemDto updateMenuItem(Long id, MenuItemDto menuItemDto, MultipartFile image) {
         MenuItem existingMenuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + id));
 
@@ -74,6 +105,17 @@ public class MenuItemServiceImpl implements MenuItemService {
                 existingMenuItem.getRestaurant().getId(), 
                 menuItemDto.getItemName())) {
             throw new IllegalArgumentException("Menu item with this name already exists in this restaurant");
+        }
+
+        // handle image upload here
+        if (image != null && !image.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                String imageUrl = imageStorageService.upload(image, fileName);
+                menuItemDto.setImageUrl(imageUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
         }
 
         modelMapper.map(menuItemDto, existingMenuItem);

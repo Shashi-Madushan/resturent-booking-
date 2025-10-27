@@ -1,8 +1,9 @@
-package org.example.resturent.dto;
+package org.example.resturent.dto.menuitem;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -15,4 +16,6 @@ public class MenuItemDto {
     private boolean available;
     private String imageUrl;
     private Long restaurantId;
+    private String imageUrl;
+    private MultipartFile image;
 }

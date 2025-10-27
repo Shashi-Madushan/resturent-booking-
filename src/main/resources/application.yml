@@ -1,0 +1,21 @@
+storage:
+  type: MINIO     # or CLOUDINARY or
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: resturentimages
+  useSsl: false
+
+cloudinary:
+  cloudName: your_cloud_name
+  apiKey: your_api_key
+  apiSecret: your_api_secret
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB

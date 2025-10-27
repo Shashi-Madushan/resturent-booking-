@@ -27,8 +27,8 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean active;
+    @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean active = true;
 
     private String role; // e.g., USER / ADMIN
 }

@@ -1,0 +1,385 @@
+{
+  "info": {
+    "name": "Resturent API - Collection",
+    "_postman_id": "d8f2b9d3-0000-4000-8000-abcdef123456",
+    "description": "Collection for Resturent API. Import to Postman. Use Signup -> Signin to obtain token and set collection variable {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "restaurantId", "value": "", "type": "string" },
+    { "key": "menuItemId", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "openHourId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup - create user (dummy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/signup", "host": ["{{baseUrl}}"], "path": ["api","auth","signup"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Signin - obtain token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/signin", "host": ["{{baseUrl}}"], "path": ["api","auth","signin"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get all users (protected)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api","users"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by id (protected) - set {{userId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update user (protected) - dummy body",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John D.\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate user (protected)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","users","{{userId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "List restaurants (paged)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants?page=0&size=10&sort=name,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","restaurants"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "name,asc" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create restaurant (multipart/form-data)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "restaurant",
+                  "type": "text",
+                  "value": "{\n  \"name\": \"The Cozy Corner\",\n  \"address\": \"123 Main St\",\n  \"phone\": \"+123456789\",\n  \"email\": \"contact@cozycorner.example\",\n  \"description\": \"Comfort food and coffee\",\n  \"capacity\": 50,\n  \"active\": true\n}"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants", "host": ["{{baseUrl}}"], "path": ["api","restaurants"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get restaurant by id (set {{restaurantId}})",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update restaurant (multipart/form-data)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "restaurant",
+                  "type": "text",
+                  "value": "{\n  \"name\": \"The Cozy Corner (Updated)\",\n  \"address\": \"123 Main St\",\n  \"phone\": \"+123456789\",\n  \"email\": \"contact@cozycorner.example\",\n  \"description\": \"Updated description\",\n  \"capacity\": 60,\n  \"active\": true\n}"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete (soft) restaurant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Menu Items",
+      "item": [
+        {
+          "name": "List menu items by restaurant (availableOnly flag)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items?availableOnly=false&page=0&size=10&sort=itemName,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","restaurants","{{restaurantId}}","menu-items"],
+              "query": [
+                { "key": "availableOnly", "value": "false" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "itemName,asc" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create menu item (multipart/form-data)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "menuItem",
+                  "type": "text",
+                  "value": "{\n  \"itemName\": \"Margherita Pizza\",\n  \"price\": 9.99,\n  \"description\": \"Classic margherita\",\n  \"available\": true,\n  \"restaurantId\": {{restaurantId}}\n}"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","menu-items"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get menu item by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items/{{menuItemId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","menu-items","{{menuItemId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update menu item (multipart/form-data)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "menuItem",
+                  "type": "text",
+                  "value": "{\n  \"itemName\": \"Margherita Pizza (Large)\",\n  \"price\": 12.99,\n  \"description\": \"Large classic margherita\",\n  \"available\": true,\n  \"restaurantId\": {{restaurantId}}\n}"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items/{{menuItemId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","menu-items","{{menuItemId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete menu item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items/{{menuItemId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","menu-items","{{menuItemId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Replace all menu items for a restaurant (PUT list)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemName\": \"Pasta Carbonara\",\n    \"price\": 11.5,\n    \"description\": \"Creamy carbonara\",\n    \"available\": true,\n    \"restaurantId\": {{restaurantId}}\n  },\n  {\n    \"itemName\": \"Caesar Salad\",\n    \"price\": 7.0,\n    \"description\": \"Fresh salad\",\n    \"available\": true,\n    \"restaurantId\": {{restaurantId}}\n  }\n]"
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/menu-items", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","menu-items"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Open Hours",
+      "item": [
+        {
+          "name": "List open hours (paged)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/open-hours?page=0&size=10&sort=dayOfWeek,asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","restaurants","{{restaurantId}}","open-hours"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sort", "value": "dayOfWeek,asc" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create open hour (protected)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dayOfWeek\": \"MONDAY\",\n  \"openingTime\": \"09:00:00\",\n  \"closingTime\": \"17:00:00\",\n  \"restaurantId\": {{restaurantId}}\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/open-hours", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","open-hours"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update open hour (protected)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dayOfWeek\": \"MONDAY\",\n  \"openingTime\": \"10:00:00\",\n  \"closingTime\": \"18:00:00\",\n  \"restaurantId\": {{restaurantId}}\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/open-hours/{{openHourId}}", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","open-hours","{{openHourId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Replace all open hours for a restaurant (PUT list)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"dayOfWeek\": \"MONDAY\",\n    \"openingTime\": \"09:00:00\",\n    \"closingTime\": \"17:00:00\",\n    \"restaurantId\": {{restaurantId}}\n  },\n  {\n    \"dayOfWeek\": \"TUESDAY\",\n    \"openingTime\": \"09:00:00\",\n    \"closingTime\": \"17:00:00\",\n    \"restaurantId\": {{restaurantId}}\n  }\n]"
+            },
+            "url": { "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}/open-hours", "host": ["{{baseUrl}}"], "path": ["api","restaurants","{{restaurantId}}","open-hours"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
