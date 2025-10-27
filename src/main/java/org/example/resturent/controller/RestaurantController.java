@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.resturent.dto.RestaurantDto;
 import org.example.resturent.service.RestaurantService;
-import org.example.resturent.service.ImageStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
-    private final ImageStorageService imageStorageService;
     private final ObjectMapper objectMapper;
 
     @GetMapping
@@ -60,19 +58,9 @@ public class RestaurantController {
             throw new RuntimeException("Invalid restaurant JSON", e);
         }
 
-        if (image != null && !image.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                String imageUrl = imageStorageService.upload(image, fileName);
-                System.out.println(imageUrl);
-                restaurantDto.setImageUrl(imageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image", e);
-            }
-        }
-
+        // delegate image handling to service
         return new ResponseEntity<>(
-                restaurantService.createRestaurant(restaurantDto),
+                restaurantService.createRestaurant(restaurantDto, image),
                 HttpStatus.CREATED
         );
     }
@@ -90,17 +78,8 @@ public class RestaurantController {
             throw new RuntimeException("Invalid restaurant JSON", e);
         }
 
-        if (image != null && !image.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                String imageUrl = imageStorageService.upload(image, fileName);
-                restaurantDto.setImageUrl(imageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to upload image", e);
-            }
-        }
-
-        return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantDto));
+        // delegate image handling to service
+        return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantDto, image));
     }
 
     @DeleteMapping("/{id}")

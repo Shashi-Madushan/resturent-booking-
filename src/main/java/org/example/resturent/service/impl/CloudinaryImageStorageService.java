@@ -47,6 +47,10 @@ public class CloudinaryImageStorageService implements ImageStorageService {
 
     @Override
     public String upload(MultipartFile file, String fileName) throws StorageException {
-        return "";
+        try {
+            return upload(file.getBytes(), fileName);
+        } catch (IOException e) {
+            throw new StorageException("Failed to read multipart file for Cloudinary upload", e);
+        }
     }
 }

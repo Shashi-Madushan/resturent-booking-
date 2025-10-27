@@ -1,4 +1,4 @@
-package org.example.resturent.dto;
+package org.example.resturent.dto.openinghour;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

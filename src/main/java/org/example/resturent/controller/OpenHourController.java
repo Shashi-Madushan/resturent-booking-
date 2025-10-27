@@ -2,7 +2,8 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.resturent.dto.OpenHourDto;
+
+import org.example.resturent.dto.openinghour.OpenHourDto;
 import org.example.resturent.service.OpenHourService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
