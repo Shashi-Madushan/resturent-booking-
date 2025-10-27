@@ -18,8 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndActiveTrue(Long id);
 
     @Modifying
-    @Query("UPDATE User u SET u.isActive = false WHERE u.id = :id")
+    @Query("UPDATE User u SET u.active = false WHERE u.id = :id")
     void deactivateUser(@Param("id") Long id);
 
-    boolean existsByIdAndActiveTrue(Long id, boolean active);
+    boolean existsByIdAndActiveTrue(Long id);
 }
