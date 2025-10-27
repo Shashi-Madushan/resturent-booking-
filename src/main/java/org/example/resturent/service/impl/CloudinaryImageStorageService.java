@@ -7,6 +7,7 @@ import org.example.resturent.exeptions.custom.StorageException;
 import org.example.resturent.service.ImageStorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.File;
@@ -42,5 +43,10 @@ public class CloudinaryImageStorageService implements ImageStorageService {
         } catch (Exception e) {
             throw new StorageException("Failed to upload to Cloudinary", e);
         }
+    }
+
+    @Override
+    public String upload(MultipartFile file, String fileName) throws StorageException {
+        return "";
     }
 }

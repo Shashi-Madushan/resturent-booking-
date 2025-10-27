@@ -4,7 +4,7 @@ storage:
 minio:
   endpoint: http://localhost:9000
   accessKey: minioadmin
-  secretKey: minioadmin123
+  secretKey: minioadmin
   bucket: resturentimages
   useSsl: false
 

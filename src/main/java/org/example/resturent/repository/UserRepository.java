@@ -21,6 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.active = false WHERE u.id = :id")
     void deactivateUser(@Param("id") Long id);
 
-    // FIX: Removed the redundant 'boolean active' parameter.
     boolean existsByIdAndActiveTrue(Long id);
 }

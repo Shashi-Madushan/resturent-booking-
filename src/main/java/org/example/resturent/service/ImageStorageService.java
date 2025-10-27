@@ -1,6 +1,7 @@
 package org.example.resturent.service;
 
 import org.example.resturent.exeptions.custom.StorageException;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageStorageService {
     /**
@@ -11,4 +12,13 @@ public interface ImageStorageService {
      * @throws StorageException in case of failure
      */
     String upload(byte[] fileBytes, String fileName) throws StorageException;
+
+    /**
+     * Uploads file directly from MultipartFile (stream-based, more efficient)
+     * @param file the multipart file
+     * @param fileName the target filename
+     * @return URL for the uploaded file
+     * @throws StorageException in case of failure
+     */
+    String upload(MultipartFile file, String fileName) throws StorageException;
 }

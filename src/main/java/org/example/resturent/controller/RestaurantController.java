@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.resturent.dto.RestaurantDto;
 import org.example.resturent.service.RestaurantService;
 import org.example.resturent.service.ImageStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,22 +24,22 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
     private final ImageStorageService imageStorageService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<Page<RestaurantDto>> getAllRestaurants(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name,asc") String[] sort) {
-        
+
         String sortField = sort[0];
         String sortDirection = sort.length > 1 ? sort[1] : "asc";
-        
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") 
-            ? Sort.Direction.DESC 
-            : Sort.Direction.ASC;
-            
+
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-        
         return ResponseEntity.ok(restaurantService.getAllRestaurants(pageable));
     }
 
@@ -46,16 +48,23 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.getRestaurantById(id));
     }
 
-    // Accept multipart/form-data so client can send JSON restaurant part + optional image file
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RestaurantDto> createRestaurant(
-            @RequestPart("restaurant") @Valid RestaurantDto restaurantDto,
+            @RequestParam("restaurant") String restaurantJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        RestaurantDto restaurantDto;
+        try {
+            restaurantDto = objectMapper.readValue(restaurantJson, RestaurantDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid restaurant JSON", e);
+        }
 
         if (image != null && !image.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                String imageUrl = imageStorageService.upload(image.getBytes(), fileName);
+                String imageUrl = imageStorageService.upload(image, fileName);
+                System.out.println(imageUrl);
                 restaurantDto.setImageUrl(imageUrl);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image", e);
@@ -63,21 +72,28 @@ public class RestaurantController {
         }
 
         return new ResponseEntity<>(
-            restaurantService.createRestaurant(restaurantDto),
-            HttpStatus.CREATED
+                restaurantService.createRestaurant(restaurantDto),
+                HttpStatus.CREATED
         );
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RestaurantDto> updateRestaurant(
-            @PathVariable Long id, 
-            @RequestPart("restaurant") @Valid RestaurantDto restaurantDto,
+            @PathVariable Long id,
+            @RequestParam("restaurant") String restaurantJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        RestaurantDto restaurantDto;
+        try {
+            restaurantDto = objectMapper.readValue(restaurantJson, RestaurantDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid restaurant JSON", e);
+        }
 
         if (image != null && !image.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                String imageUrl = imageStorageService.upload(image.getBytes(), fileName);
+                String imageUrl = imageStorageService.upload(image, fileName);
                 restaurantDto.setImageUrl(imageUrl);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image", e);
