@@ -1,5 +1,9 @@
 storage:
-  type: MINIO     # or CLOUDINARY or
+  type: LOCAL     # or CLOUDINARY or LOCAL
+
+local:
+  directory: uploads
+  base-url: http://localhost:8080/uploads
 
 minio:
   endpoint: http://localhost:9000
