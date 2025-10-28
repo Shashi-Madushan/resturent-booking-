@@ -1,10 +1,9 @@
 storage:
-  type: LOCAL     # or CLOUDINARY or LOCAL
-
-local:
-  directory: uploads
-  base-url: http://localhost:8080/uploads
-
+  type: LOCAL
+  local:
+    directory: uploads
+    public-path: uploads   
+    
 minio:
   endpoint: http://localhost:9000
   accessKey: minioadmin

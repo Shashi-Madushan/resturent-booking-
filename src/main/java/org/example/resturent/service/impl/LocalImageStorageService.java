@@ -21,12 +21,12 @@ import java.nio.file.StandardCopyOption;
 public class LocalImageStorageService implements ImageStorageService {
 
     private final Path storagePath;
-    private final String baseUrl;
+    private final String publicPath;
 
-    public LocalImageStorageService(@Value("${storage.local.directory:uploads}") String storageDirectory,
-                                    @Value("${storage.local.base-url:}") String baseUrl) {
+    public LocalImageStorageService(@Value("${storage.local.directory:${local.directory:uploads}}") String storageDirectory,
+                                    @Value("${storage.local.public-path:${local.public-path:uploads}}") String publicPath) {
         this.storagePath = Paths.get(storageDirectory).toAbsolutePath().normalize();
-        this.baseUrl = normalizeBaseUrl(baseUrl);
+        this.publicPath = normalizePublicPath(publicPath);
         initStorageDirectory();
     }
 
@@ -85,13 +85,23 @@ public class LocalImageStorageService implements ImageStorageService {
     }
 
     private String buildFileAccessPath(String fileName) {
-        if (!baseUrl.isBlank()) {
-            return baseUrl + (baseUrl.endsWith("/") ? "" : "/") + fileName;
+        if (publicPath.isBlank()) {
+            return fileName;
         }
-        return storagePath.resolve(fileName).toString();
+        return publicPath + (publicPath.endsWith("/") ? "" : "/") + fileName;
     }
 
-    private String normalizeBaseUrl(String url) {
-        return url == null ? "" : url.trim();
+    private String normalizePublicPath(String path) {
+        if (path == null) {
+            return "";
+        }
+        String normalized = path.trim().replace("\\", "/");
+        while (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        while (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+        return normalized;
     }
 }
