@@ -1,5 +1,7 @@
 package org.example.resturent.dto.booking;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +17,9 @@ import java.time.OffsetDateTime;
 public class BookingUpdateDTO {
     private OffsetDateTime startDateTime;
     private OffsetDateTime endDateTime;
+    @Positive
     private Integer partySize;
+    @Size(max = 500)
     private String specialRequests;
     private BookingStatus status;
 }

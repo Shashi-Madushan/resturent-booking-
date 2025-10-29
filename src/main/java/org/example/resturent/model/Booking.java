@@ -35,4 +35,10 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ENUM('PENDING', 'CONFIRMED', 'CANCELLED', 'CHECKED_IN', 'COMPLETED')")
     private BookingStatus status;
+
+    @Column(nullable = false)
+    private Integer partySize;
+
+    @Column(length = 500)
+    private String specialRequests;
 }
