@@ -1,9 +1,11 @@
 package org.example.resturent.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.resturent.dto.openinghour.OpenHourDto;
 import org.example.resturent.dto.resturent.RestaurantDto;
 import org.example.resturent.exeptions.custom.ResourceNotFoundException;
 import org.example.resturent.model.Restaurant;
+import org.example.resturent.model.OpenHour;
 import org.example.resturent.repository.RestaurantRepository;
 import org.example.resturent.service.RestaurantService;
 import org.example.resturent.service.ImageStorageService;
@@ -94,7 +96,30 @@ public class RestaurantServiceImpl implements RestaurantService {
             }
         }
 
-        modelMapper.map(restaurantDto, existingRestaurant);
+        // Manually update the fields to avoid collection reference issues
+        existingRestaurant.setName(restaurantDto.getName());
+        existingRestaurant.setAddress(restaurantDto.getAddress());
+        existingRestaurant.setPhone(restaurantDto.getPhone());
+        existingRestaurant.setEmail(restaurantDto.getEmail());
+        existingRestaurant.setDescription(restaurantDto.getDescription());
+        existingRestaurant.setCapacity(restaurantDto.getCapacity());
+        
+        // Only update image URL if a new one was provided
+        if (restaurantDto.getImageUrl() != null && !restaurantDto.getImageUrl().isEmpty()) {
+            existingRestaurant.setImageUrl(restaurantDto.getImageUrl());
+        }
+        
+        // Handle openHours collection properly
+        if (restaurantDto.getOpenHours() != null && !restaurantDto.getOpenHours().isEmpty()) {
+            // Clear existing open hours and add new ones
+            existingRestaurant.getOpenHours().clear();
+            for (OpenHourDto openHourDto : restaurantDto.getOpenHours()) {
+                OpenHour openHour = modelMapper.map(openHourDto, OpenHour.class);
+                openHour.setRestaurant(existingRestaurant);
+                existingRestaurant.getOpenHours().add(openHour);
+            }
+        }
+
         Restaurant updatedRestaurant = restaurantRepository.save(existingRestaurant);
         return modelMapper.map(updatedRestaurant, RestaurantDto.class);
     }

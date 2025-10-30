@@ -71,12 +71,16 @@ public class RestaurantController {
             @RequestParam("restaurant") String restaurantJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
+        System.out.println("Restaurant JSON: " + restaurantJson);
+
         RestaurantDto restaurantDto;
         try {
             restaurantDto = objectMapper.readValue(restaurantJson, RestaurantDto.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Invalid restaurant JSON", e);
         }
+
+        System.out.println("DTO: " + restaurantDto);
 
         // delegate image handling to service
         return ResponseEntity.ok(restaurantService.updateRestaurant(id, restaurantDto, image));
