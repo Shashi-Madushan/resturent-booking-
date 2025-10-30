@@ -14,10 +14,12 @@ import org.example.resturent.repository.RestaurantRepository;
 import org.example.resturent.service.OpenHourService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +36,17 @@ public class OpenHourServiceImpl implements OpenHourService {
         if (!restaurantRepository.existsById(restaurantId)) {
             throw new ResourceNotFoundException("Restaurant not found with id: " + restaurantId);
         }
-        return openHourRepository.findByRestaurantId(restaurantId, pageable)
-                .map(openHour -> modelMapper.map(openHour, OpenHourDto.class));
+
+        Page<OpenHour> openHours = openHourRepository.findByRestaurantId(restaurantId, pageable);
+        return new PageImpl<>(openHours.stream()
+                .map(openHour -> {
+                    OpenHourDto openHourDto = modelMapper.map(openHour, OpenHourDto.class);
+                    openHourDto.setRestaurantId(restaurantId);
+                    return openHourDto;
+                })
+                .collect(Collectors.toList()), openHours.getPageable(), openHours.getTotalElements());
     }
+
 
     @Override
     public OpenHourDto getOpenHourById(Long id) {
@@ -58,7 +68,9 @@ public class OpenHourServiceImpl implements OpenHourService {
         OpenHour openHour = modelMapper.map(openHourDto, OpenHour.class);
         openHour.setRestaurant(restaurant);
         OpenHour savedOpenHour = openHourRepository.save(openHour);
-        return modelMapper.map(savedOpenHour, OpenHourDto.class);
+        OpenHourDto openHourRes = modelMapper.map(savedOpenHour, OpenHourDto.class);
+        openHourRes.setRestaurantId(restaurant.getId());
+        return openHourDto;
     }
 
     @Override
@@ -67,16 +79,25 @@ public class OpenHourServiceImpl implements OpenHourService {
         OpenHour existingOpenHour = openHourRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Open hour not found with id: " + id));
 
+        // Check if day of week is being changed and if the new day already exists
         if (!existingOpenHour.getDayOfWeek().equals(openHourDto.getDayOfWeek()) &&
-            openHourRepository.existsByRestaurantAndDayOfWeek(
-                existingOpenHour.getRestaurant(), 
-                openHourDto.getDayOfWeek())) {
+                openHourRepository.existsByRestaurantAndDayOfWeek(
+                        existingOpenHour.getRestaurant(),
+                        openHourDto.getDayOfWeek())) {
             throw new IllegalArgumentException("Open hour already exists for this day of week");
         }
 
-        modelMapper.map(openHourDto, existingOpenHour);
+        // Manually update only the fields that should be updated
+        existingOpenHour.setDayOfWeek(openHourDto.getDayOfWeek());
+        existingOpenHour.setOpeningTime(openHourDto.getOpeningTime());
+        existingOpenHour.setOpeningTime(openHourDto.getOpeningTime());
+        existingOpenHour.setClosed(openHourDto.isClosed());
+
         OpenHour updatedOpenHour = openHourRepository.save(existingOpenHour);
-        return modelMapper.map(updatedOpenHour, OpenHourDto.class);
+        OpenHourDto responseDto = modelMapper.map(updatedOpenHour, OpenHourDto.class);
+        responseDto.setRestaurantId(updatedOpenHour.getRestaurant().getId());
+        return responseDto;
+
     }
 
     @Override
@@ -108,8 +129,12 @@ public class OpenHourServiceImpl implements OpenHourService {
                 .collect(Collectors.toList());
 
         List<OpenHour> savedOpenHours = openHourRepository.saveAll(newOpenHours);
-        return savedOpenHours.stream()
-                .map(openHour -> modelMapper.map(openHour, OpenHourDto.class))
-                .collect(Collectors.toList());
+        List<OpenHourDto> result = new ArrayList<>();
+        for (OpenHour openHour : savedOpenHours) {
+            OpenHourDto openHourDto = modelMapper.map(openHour, OpenHourDto.class);
+            openHourDto.setRestaurantId(restaurantId);
+            result.add(openHourDto);
+        }
+        return result;
     }
 }
