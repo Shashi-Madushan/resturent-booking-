@@ -2,6 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.resturent.dto.response.MessageResponse;
 import org.example.resturent.dto.resturent.RestaurantDto;
 import org.example.resturent.service.RestaurantService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,8 +88,8 @@ public class RestaurantController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new MessageResponse("Restaurant deleted successfully"));
     }
 }
