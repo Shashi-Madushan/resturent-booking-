@@ -19,6 +19,8 @@ public class BookingDTO {
     private OffsetDateTime startDateTime;
     private OffsetDateTime endDateTime;
     private BookingStatus status;
+    private Integer partySize;
+    private String specialRequests;
 
     // if we want additional fields
    /* private String customerName;
