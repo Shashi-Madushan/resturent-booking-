@@ -54,10 +54,10 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping("/{userId}")
     public ResponseEntity<ReviewDTO> createReview(
             @PathVariable Long restaurantId,
-            @RequestAttribute("userId") Long userId,
+            @PathVariable Long userId,
             @Valid @RequestBody ReviewRequestDTO requestDTO) {
         
         // Ensure the restaurantId in the path matches the one in the request body
