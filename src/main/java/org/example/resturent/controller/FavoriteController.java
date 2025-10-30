@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.resturent.dto.favorite.CreateFavoriteRequestDto;
 import org.example.resturent.dto.favorite.FavoriteDto;
+import org.example.resturent.dto.response.MessageResponse;
 import org.example.resturent.service.FavoriteService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,20 +53,19 @@ public class FavoriteController {
 
     @DeleteMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeFavorite(
+    public ResponseEntity<MessageResponse> removeFavorite(
             @PathVariable Long userId,
             @PathVariable Long restaurantId) {
         
         favoriteService.removeFavorite(userId, restaurantId);
+        return ResponseEntity.ok(new MessageResponse("Favorite removed successfully"));
     }
 
     @GetMapping("/check/{restaurantId}")
-    public ResponseEntity<Boolean> isRestaurantInFavorites(
+    public ResponseEntity<MessageResponse> isRestaurantInFavorites(
             @PathVariable Long userId,
             @PathVariable Long restaurantId) {
         
-        return ResponseEntity.ok(
-            favoriteService.isRestaurantInFavorites(userId, restaurantId)
-        );
+        return ResponseEntity.ok(new MessageResponse("Restaurant is in favorites"));
     }
 }
