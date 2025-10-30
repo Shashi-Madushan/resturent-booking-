@@ -83,7 +83,9 @@ public class MenuItemServiceImpl implements MenuItemService {
         MenuItem menuItem = modelMapper.map(menuItemDto, MenuItem.class);
         menuItem.setRestaurant(restaurant);
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
-        return modelMapper.map(savedMenuItem, MenuItemDto.class);
+        MenuItemDto menuItemDto1 = modelMapper.map(savedMenuItem, MenuItemDto.class);
+        menuItemDto1.setRestaurantId(restaurant.getId());
+        return menuItemDto1;
     }
 
     // delegate no-image call to new method
@@ -100,10 +102,18 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found with id: " + id));
 
         // Check if the name is being changed and if it conflicts with existing items
-        if (!existingMenuItem.getItemName().equalsIgnoreCase(menuItemDto.getItemName()) &&
+        if (menuItemDto.getItemName() != null && 
+            existingMenuItem.getItemName() != null &&
+            !existingMenuItem.getItemName().equalsIgnoreCase(menuItemDto.getItemName()) &&
             menuItemRepository.existsByRestaurantIdAndItemNameIgnoreCase(
                 existingMenuItem.getRestaurant().getId(), 
                 menuItemDto.getItemName())) {
+            throw new IllegalArgumentException("Menu item with this name already exists in this restaurant");
+        } else if (menuItemDto.getItemName() != null && 
+                   existingMenuItem.getItemName() == null &&
+                   menuItemRepository.existsByRestaurantIdAndItemNameIgnoreCase(
+                       existingMenuItem.getRestaurant().getId(), 
+                       menuItemDto.getItemName())) {
             throw new IllegalArgumentException("Menu item with this name already exists in this restaurant");
         }
 
@@ -118,9 +128,25 @@ public class MenuItemServiceImpl implements MenuItemService {
             }
         }
 
-        modelMapper.map(menuItemDto, existingMenuItem);
+        // Update only non-null fields
+        if (menuItemDto.getItemName() != null) {
+            existingMenuItem.setItemName(menuItemDto.getItemName());
+        }
+        if (menuItemDto.getDescription() != null) {
+            existingMenuItem.setDescription(menuItemDto.getDescription());
+        }
+        if (menuItemDto.getPrice() > 0) {
+            existingMenuItem.setPrice(menuItemDto.getPrice());
+        }
+        existingMenuItem.setAvailable(menuItemDto.isAvailable());
+        if (menuItemDto.getImageUrl() != null) {
+            existingMenuItem.setImageUrl(menuItemDto.getImageUrl());
+        }
+
         MenuItem updatedMenuItem = menuItemRepository.save(existingMenuItem);
-        return modelMapper.map(updatedMenuItem, MenuItemDto.class);
+        MenuItemDto resultDto = modelMapper.map(updatedMenuItem, MenuItemDto.class);
+        resultDto.setRestaurantId(updatedMenuItem.getRestaurant().getId());
+        return resultDto;
     }
 
     @Override

@@ -1,11 +1,17 @@
 package org.example.resturent.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.resturent.dto.menuitem.MenuItemDto;
+import org.example.resturent.dto.response.MessageResponse;
+import org.example.resturent.dto.resturent.RestaurantDto;
 import org.example.resturent.service.MenuItemService;
 import org.springframework.data.domain.*;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +23,8 @@ import java.util.List;
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
+    private final ObjectMapper objectMapper;
+
 
     @GetMapping
     public ResponseEntity<Page<MenuItemDto>> getMenuItemsByRestaurantId(
@@ -44,10 +52,16 @@ public class MenuItemController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MenuItemDto> createMenuItem(
             @PathVariable Long restaurantId,
-            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestParam("menuItem") String menuItemJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
-        menuItemDto.setRestaurantId(restaurantId);
+        MenuItemDto menuItemDto;
+        try {
+            menuItemDto = objectMapper.readValue(menuItemJson, MenuItemDto.class);
+            menuItemDto.setRestaurantId(restaurantId);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid menu item JSON", e);
+        }
 
         // delegate image handling to service
         return new ResponseEntity<>(menuItemService.createMenuItem(menuItemDto, image), HttpStatus.CREATED);
@@ -57,21 +71,29 @@ public class MenuItemController {
     public ResponseEntity<MenuItemDto> updateMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long id,
-            @RequestPart("menuItem") @Valid MenuItemDto menuItemDto,
+            @RequestParam("menuItem") String menuItemJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
-        menuItemDto.setRestaurantId(restaurantId);
+        MenuItemDto menuItemDto;
+        try {
+            menuItemDto = objectMapper.readValue(menuItemJson, MenuItemDto.class);
+            menuItemDto.setRestaurantId(restaurantId);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Invalid menu item JSON", e);
+        }
+
+        System.out.println("MenuItem JSON: " + menuItemJson);
 
         // delegate image handling to service
         return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDto, image));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMenuItem(
+    public ResponseEntity<MessageResponse> deleteMenuItem(
             @PathVariable Long restaurantId,
             @PathVariable Long id) {
         menuItemService.deleteMenuItem(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new MessageResponse("MenuItem deleted successfully"));
     }
 
     @PutMapping
