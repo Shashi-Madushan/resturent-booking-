@@ -2,6 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.resturent.dto.response.MessageResponse;
 import org.example.resturent.dto.review.ReviewDTO;
 import org.example.resturent.dto.review.ReviewRequestDTO;
 import org.example.resturent.service.ReviewService;
@@ -71,11 +72,11 @@ public class ReviewController {
         );
     }
 
-    @PutMapping("/{reviewId}")
+    @PutMapping("/{reviewId}/{userId}")
     public ResponseEntity<ReviewDTO> updateReview(
             @PathVariable Long restaurantId,
             @PathVariable Long reviewId,
-            @RequestAttribute("userId") Long userId,
+            @PathVariable Long userId,
             @Valid @RequestBody ReviewRequestDTO requestDTO) {
         
         // Ensure the restaurantId in the path matches the one in the request body
@@ -88,24 +89,28 @@ public class ReviewController {
         );
     }
 
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/{reviewId}/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReview(
+    public ResponseEntity<MessageResponse> deleteReview(
             @PathVariable Long restaurantId,
             @PathVariable Long reviewId,
-            @RequestAttribute("userId") Long userId) {
+            @PathVariable Long userId) {
         
         reviewService.deleteReview(reviewId, userId);
+        return ResponseEntity.ok(new MessageResponse("Review deleted successfully"));
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<Boolean> hasUserReviewedRestaurant(
+    @GetMapping("/check/{userId}")
+    public ResponseEntity<MessageResponse> hasUserReviewedRestaurant(
             @PathVariable Long restaurantId,
-            @RequestAttribute("userId") Long userId) {
+            @PathVariable Long userId) {
         
-        return ResponseEntity.ok(
-            reviewService.hasUserReviewedRestaurant(userId, restaurantId)
-        );
+            boolean status = reviewService.hasUserReviewedRestaurant(userId, restaurantId);
+             if (status){
+                 return ResponseEntity.ok(new MessageResponse("true"));
+             }else{
+                 return ResponseEntity.ok(new MessageResponse("false"));
+             }
     }
     
     // Inner class for review statistics response
