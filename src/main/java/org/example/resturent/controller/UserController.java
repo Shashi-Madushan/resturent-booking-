@@ -2,6 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.resturent.dto.response.MessageResponse;
 import org.example.resturent.dto.user.UserDTO;
 import org.example.resturent.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,8 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivateUser(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deactivateUser(@PathVariable Long id) {
         userService.deactivateUser(id);
+        return ResponseEntity.ok(new MessageResponse("User deactivated successfully"));
     }
 }

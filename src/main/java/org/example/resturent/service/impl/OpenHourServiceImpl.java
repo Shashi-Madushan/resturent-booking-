@@ -70,7 +70,7 @@ public class OpenHourServiceImpl implements OpenHourService {
         OpenHour savedOpenHour = openHourRepository.save(openHour);
         OpenHourDto openHourRes = modelMapper.map(savedOpenHour, OpenHourDto.class);
         openHourRes.setRestaurantId(restaurant.getId());
-        return openHourDto;
+        return openHourRes;
     }
 
     @Override
