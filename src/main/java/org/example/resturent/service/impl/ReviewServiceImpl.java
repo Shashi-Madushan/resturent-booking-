@@ -76,8 +76,11 @@ public class ReviewServiceImpl implements ReviewService {
         
         // Update restaurant's average rating
         //updateRestaurantRating(restaurant.getId());
-        
-        return toDTO(savedReview);
+        ReviewDTO reviewDTO = modelMapper.map(savedReview, ReviewDTO.class);
+        reviewDTO.setUserId(user.getId());
+        reviewDTO.setRestaurantId(restaurant.getId());
+        reviewDTO.setCreatedAt(review.getCreatedAt());
+        return reviewDTO;
     }
 
     @Override

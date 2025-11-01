@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Data
@@ -17,5 +18,5 @@ public class ReviewDTO {
     private Long restaurantId;
     private Integer rating;
     private String comment;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }
