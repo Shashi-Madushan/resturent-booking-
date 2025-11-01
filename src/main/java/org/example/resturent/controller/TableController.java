@@ -2,6 +2,7 @@ package org.example.resturent.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.resturent.dto.response.MessageResponse;
 import org.example.resturent.dto.table.TableDTO;
 import org.example.resturent.dto.table.TableRequestDTO;
 import org.example.resturent.service.TableService;
@@ -61,12 +62,19 @@ public class TableController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTable(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deleteTable(@PathVariable Long id) {
         tableService.deleteTable(id);
+        return ResponseEntity.ok(new MessageResponse("Table deleted successfully"));
     }
 
     @GetMapping("/{id}/availability")
-    public ResponseEntity<Boolean> isTableAvailable(@PathVariable Long id) {
-        return ResponseEntity.ok(tableService.isTableAvailable(id));
+    public ResponseEntity<MessageResponse> isTableAvailable(
+            @PathVariable Long id) {
+        boolean result = tableService.isTableAvailable(id);
+        if (result){
+            return ResponseEntity.ok(new MessageResponse("true"));
+        }else{
+            return ResponseEntity.ok(new MessageResponse("false"));
+        }
     }
 }
