@@ -90,7 +90,7 @@ public class OpenHourServiceImpl implements OpenHourService {
         // Manually update only the fields that should be updated
         existingOpenHour.setDayOfWeek(openHourDto.getDayOfWeek());
         existingOpenHour.setOpeningTime(openHourDto.getOpeningTime());
-        existingOpenHour.setOpeningTime(openHourDto.getOpeningTime());
+        existingOpenHour.setClosingTime(openHourDto.getClosingTime());
         existingOpenHour.setClosed(openHourDto.isClosed());
 
         OpenHour updatedOpenHour = openHourRepository.save(existingOpenHour);
