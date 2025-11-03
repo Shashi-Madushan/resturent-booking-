@@ -1,5 +1,7 @@
 package org.example.resturent.repository;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.example.resturent.model.TableEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +33,6 @@ public interface TableRepository extends JpaRepository<TableEntity, Long> {
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );
+
+    boolean existsByLabelAndRestaurant_Id(@NotBlank(message = "Label is required") String label, @NotNull(message = "Restaurant ID is required") Long restaurantId);
 }

@@ -44,7 +44,7 @@ public class TableServiceImpl implements TableService {
     @Transactional
     public TableDTO createTable(TableRequestDTO tableRequestDTO) {
         // Check if table with the same label already exists
-        if (tableRepository.existsByLabel(tableRequestDTO.getLabel())) {
+        if (tableRepository.existsByLabelAndRestaurant_Id(tableRequestDTO.getLabel(), tableRequestDTO.getRestaurantId())) {
             throw new ResourceAlreadyExistsException("Table with label " + tableRequestDTO.getLabel() + " already exists");
         }
 

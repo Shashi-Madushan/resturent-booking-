@@ -60,8 +60,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll().requestMatchers("/swagger-resources/**").permitAll()
-                    .requestMatchers("/uploads/**").permitAll()
-                .anyRequest().authenticated()
+                    .requestMatchers("/uploads/**").permitAll().requestMatchers("/api/restaurants").permitAll().requestMatchers("/api/restaurants/{restaurantId}/menu-items").permitAll().requestMatchers("/api/restaurants/{id}").permitAll()
+                    .anyRequest().authenticated()
             );
         
         http.authenticationProvider(authenticationProvider());
